@@ -10,7 +10,7 @@ import {RegExpCursor, validRegExp} from "./regexp"
 import {gotoLine} from "./goto-line"
 import {selectNextOccurrence} from "./selection-match"
 
-export {highlightSelectionMatches} from "./selection-match"
+export {highlightSelectionMatches, selectWord} from "./selection-match"
 export {SearchCursor, RegExpCursor, gotoLine, selectNextOccurrence}
 
 interface SearchConfig {
@@ -208,7 +208,7 @@ function stringWordTest(doc: Text, categorizer: (ch: string) => CharCategory) {
   }
 }
 
-class StringQuery extends QueryType<SearchResult> {
+export class StringQuery extends QueryType<SearchResult> {
   constructor(spec: SearchQuery) {
     super(spec)
   }

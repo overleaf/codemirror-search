@@ -120,7 +120,7 @@ const defaultTheme = EditorView.baseTheme({
 })
 
 // Select the words around the cursors.
-const selectWord: StateCommand = ({state, dispatch}) => {
+export const selectWord: StateCommand = ({state, dispatch}) => {
   let {selection} = state
   let newSel = EditorSelection.create(selection.ranges.map(
     range => state.wordAt(range.head) || EditorSelection.cursor(range.head)
