@@ -592,7 +592,9 @@ export const searchKeymap: readonly KeyBinding[] = [
   {key: "Mod-g", run: findNext, shift: findPrevious, scope: "editor search-panel", preventDefault: true},
   {key: "Escape", run: closeSearchPanel, scope: "editor search-panel"},
   {key: "Mod-Shift-l", run: selectSelectionMatches},
-  {key: "Alt-g", run: gotoLine},
+  // This keybinding causes issues with entering @ on certain keyboard layouts
+  // https://github.com/overleaf/internal/issues/12119
+  // {key: "Alt-g", run: gotoLine},
   {key: "Mod-d", run: selectNextOccurrence, preventDefault: true},
 ]
 
