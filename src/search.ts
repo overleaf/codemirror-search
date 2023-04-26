@@ -347,7 +347,7 @@ class RegExpQuery extends QueryType<RegExpResult> {
 /// once).
 export const setSearchQuery = StateEffect.define<SearchQuery>()
 
-const togglePanel = StateEffect.define<boolean>()
+export const togglePanel = StateEffect.define<boolean>()
 
 const searchState: StateField<SearchState> = StateField.define<SearchState>({
   create(state) {
@@ -531,7 +531,7 @@ export const replaceAll = searchCommand((view, {query}) => {
   return true
 })
 
-function createSearchPanel(view: EditorView) {
+export function createSearchPanel(view: EditorView) {
   return view.state.facet(searchConfigFacet).createPanel(view)
 }
 
