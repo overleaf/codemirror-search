@@ -215,8 +215,11 @@ export class StringQuery extends QueryType<SearchResult> {
 
   nextMatch(state: EditorState, curFrom: number, curTo: number) {
     let cursor = stringCursor(this.spec, state, curTo, state.doc.length).nextOverlapping()
-    if (cursor.done) cursor = stringCursor(this.spec, state, 0, curFrom).nextOverlapping()
-    return cursor.done ? null : cursor.value
+    if (cursor.done) {
+      let end = Math.min(state.doc.length, curFrom + this.spec.unquoted.length)
+      cursor = stringCursor(this.spec, state, 0, end).nextOverlapping()
+    }
+    return cursor.done || cursor.value.from == curFrom && cursor.value.to == curTo ? null : cursor.value
   }
 
   // Searching in reverse is, rather than implementing an inverted search
@@ -233,8 +236,10 @@ export class StringQuery extends QueryType<SearchResult> {
   }
 
   prevMatch(state: EditorState, curFrom: number, curTo: number) {
-    return this.prevMatchInRange(state, 0, curFrom) ||
-      this.prevMatchInRange(state, curTo, state.doc.length)
+    let found = this.prevMatchInRange(state, 0, curFrom)
+    if (!found)
+      found = this.prevMatchInRange(state, Math.max(0, curTo - this.spec.unquoted.length), state.doc.length)
+    return found && (found.from != curFrom || found.to != curTo) ? found : null
   }
 
   getReplacement(_result: SearchResult) { return this.spec.unquote(this.spec.replace) }
@@ -590,7 +595,7 @@ export const closeSearchPanel: Command = view => {
 ///  - Mod-f: [`openSearchPanel`](#search.openSearchPanel)
 ///  - F3, Mod-g: [`findNext`](#search.findNext)
 ///  - Shift-F3, Shift-Mod-g: [`findPrevious`](#search.findPrevious)
-///  - Alt-g: [`gotoLine`](#search.gotoLine)
+///  - Mod-Alt-g: [`gotoLine`](#search.gotoLine)
 ///  - Mod-d: [`selectNextOccurrence`](#search.selectNextOccurrence)
 export const searchKeymap: readonly KeyBinding[] = [
   {key: "Mod-f", run: openSearchPanel, scope: "editor search-panel"},
@@ -598,9 +603,7 @@ export const searchKeymap: readonly KeyBinding[] = [
   {key: "Mod-g", run: findNext, shift: findPrevious, scope: "editor search-panel", preventDefault: true},
   {key: "Escape", run: closeSearchPanel, scope: "editor search-panel"},
   {key: "Mod-Shift-l", run: selectSelectionMatches},
-  // This keybinding causes issues with entering @ on certain keyboard layouts
-  // https://github.com/overleaf/internal/issues/12119
-  // {key: "Alt-g", run: gotoLine},
+  {key: "Mod-Alt-g", run: gotoLine},
   {key: "Mod-d", run: selectNextOccurrence, preventDefault: true},
 ]
 
